@@ -1,0 +1,10 @@
+# Refactoring Notes
+
+**Main Design Decisions & Maintainability**
+To transform the monolithic script into a production-ready and maintainable service, I applied the principles of Separation of Concerns (SoC) and Dependency Injection (DI). I decoupled the application into distinct layers: API routing (`api/`), business logic (`services/rag_workflow.py`), data access (`services/document_store.py`), and external utilities (`services/embedding_service.py`). By removing global variables and injecting dependencies (like the document store and embedding service) directly into the router and workflow, the application is now highly modular. This ensures that each component has a single responsibility and can be unit-tested in isolation without requiring a live database or complex mocking.
+
+**Data Access Abstraction**
+A critical design decision was introducing the `DocumentStore` Abstract Base Class (ABC). Instead of scattering `if USING_QDRANT` conditionals throughout the API and LangGraph nodes, the workflow now interacts with a unified interface. The application factory dynamically provisions either the `QdrantDocumentStore` or `InMemoryDocumentStore` at startup. This implementation of polymorphism not only cleans up the core logic but also makes the system highly extensible; adding a new vector database in the future would require zero changes to the router or the LangGraph pipeline.
+
+**Considered Trade-off**
+One major trade-off I considered was the introduction of architectural overhead. The original `main.py` was highly compact (under 100 lines) and easy to read top-to-bottom for a quick prototype. Distributing the logic across multiple directories, utilizing ABCs, and setting up dependency injection introduces boilerplate and a slightly steeper initial learning curve for new developers. However, I chose this approach because prioritizing structural integrity over script-like simplicity is a necessary investment for a scalable service, ensuring long-term maintainability, type safety (via Pydantic and `TypedDict`), and resilience.
