@@ -1,11 +1,11 @@
 import time
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from services.document_store import DocumentStore, InMemoryDocumentStore
 from services.rag_workflow import RagWorkflow
 
-# Request / response schema
+# Request
 class QuestionRequest(BaseModel):
     question: str
 
@@ -28,7 +28,6 @@ class StatusResponse(BaseModel):
     graph_ready: bool
 
 # Router factory
-
 def create_router(
     document_store: DocumentStore,
     rag_workflow: RagWorkflow,
