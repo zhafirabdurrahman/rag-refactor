@@ -9,12 +9,12 @@ from services.rag_workflow import RagWorkflow
 def create_app() -> FastAPI:
     """Compose all dependencies and return a configured FastAPI application."""
 
-    # 1. Build services (innermost → outermost dependency order)
+    # Build services (innermost - outermost dependency order)
     embedding_service = EmbeddingService()
     document_store = build_document_store(embedding_service)
     rag_workflow = RagWorkflow(document_store)
 
-    # 2. Create FastAPI app and attach the router
+    # Create FastAPI app and attach the router
     app = FastAPI(title="Learning RAG Demo")
     app.include_router(create_router(document_store, rag_workflow))
 
